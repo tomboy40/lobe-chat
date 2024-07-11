@@ -29,7 +29,7 @@ jobs:
         run: git fetch --all
 
       - name: Merge upstream changes
-        run: git merge upstream/main
+        run: git merge lobehub/lobe-chat/main
 
       - name: Push changes
         run: git push origin main
@@ -43,7 +43,7 @@ jobs:
           upstream_sync_repo: lobehub/lobe-chat
           upstream_sync_branch: main
           target_sync_branch: main
-          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
+          target_repo_token: ${{ secrets._TOKEN }} # automatically generated, no need to set
           test_mode: false
 
       - name: Sync check
