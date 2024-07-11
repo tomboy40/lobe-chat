@@ -24,18 +24,27 @@ jobs:
         with:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
+  
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/lobehub/lobe-chat.git
 
-      - name: Fetch all branches
-        run: git fetch --all
+      - name: Verify upstream remote
+        run: git remote -v
 
-      - name: Merge upstream changes
-        run: git merge lobehub/lobe-chat/main
+      - name: Fetch all branches from upstream
+        run: git fetch upstream
+
+      - name: Check if upstream/main exists
+        run: git show-ref --verify --quiet refs/remotes/upstream/main
+
+      - name: Merge upstream/main into local main
+        run: git merge upstream/main
 
       - name: Push changes
         run: git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
+  
       - name: Sync upstream changes
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
@@ -43,7 +52,7 @@ jobs:
           upstream_sync_repo: lobehub/lobe-chat
           upstream_sync_branch: main
           target_sync_branch: main
-          target_repo_token: ${{ secrets._TOKEN }} # automatically generated, no need to set
+          target_repo_token: ${{ secrets.PAT_TOKEN }} # automatically generated, no need to set
           test_mode: false
 
       - name: Sync check
