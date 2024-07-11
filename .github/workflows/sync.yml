@@ -45,7 +45,9 @@ jobs:
       - name: Merge upstream/main into local main
         id: merge
         run: |
-          git merge upstream/main --allow-unrelated-histories || echo "Merge conflicts detected" > $GITHUB_ENV
+          if ! git merge upstream/main --allow-unrelated-histories; then
+            echo "MERGE_CONFLICTS=true" >> $GITHUB_ENV
+          fi
 
       - name: Resolve Conflicts
         if: env.MERGE_CONFLICTS == 'true'
