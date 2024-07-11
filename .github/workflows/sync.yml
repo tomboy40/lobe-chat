@@ -43,7 +43,15 @@ jobs:
         run: git show-ref --verify --quiet refs/remotes/upstream/main
 
       - name: Merge upstream/main into local main
-        run: git merge upstream/main --allow-unrelated-histories
+        id: merge
+        run: |
+          git merge upstream/main --allow-unrelated-histories || echo "Merge conflicts detected" > $GITHUB_ENV
+
+      - name: Resolve Conflicts
+        if: env.MERGE_CONFLICTS == 'true'
+        run: |
+          git merge --strategy-option theirs
+          git commit -am "Resolved merge conflicts using theirs strategy"
 
       - name: Push changes
         run: git push origin main
