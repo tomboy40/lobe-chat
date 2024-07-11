@@ -25,6 +25,17 @@ jobs:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
 
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Merge upstream changes
+        run: git merge upstream/main
+
+      - name: Push changes
+        run: git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
       - name: Sync upstream changes
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
