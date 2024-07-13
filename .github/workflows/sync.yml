@@ -24,52 +24,7 @@ jobs:
         with:
           actions: 'close-issues'
           labels: '🚨 Sync Fail'
-  
-      - name: Set up Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add upstream remote
-        run: git remote add upstream https://github.com/lobehub/lobe-chat.git
-
-      - name: Verify upstream remote
-        run: git remote -v
-
-      - name: Fetch all branches from upstream
-        run: git fetch upstream
-
-      - name: Check if upstream/main exists
-        run: git show-ref --verify --quiet refs/remotes/upstream/main
-
-      - name: Attempt to merge upstream/main into local main
-        id: merge
-        run: |
-          git merge upstream/main --allow-unrelated-histories || echo "MERGE_CONFLICTS=true" >> $GITHUB_ENV
-
-      - name: Check for merge conflicts
-        if: env.MERGE_CONFLICTS == 'true'
-        run: echo "Merge conflicts detected"
-
-      - name: Resolve merge conflicts using theirs strategy
-        if: env.MERGE_CONFLICTS == 'true'
-        run: |
-          git merge --strategy-option theirs || true
-          git add -A
-          git commit -m "Resolved merge conflicts using theirs strategy"
-
-      - name: Push changes
-        if: env.MERGE_CONFLICTS == 'false'
-        run: git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-      - name: Push changes after resolving conflicts
-        if: env.MERGE_CONFLICTS == 'true'
-        run: git push origin main --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-  
       - name: Sync upstream changes
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
@@ -77,7 +32,7 @@ jobs:
           upstream_sync_repo: lobehub/lobe-chat
           upstream_sync_branch: main
           target_sync_branch: main
-          target_repo_token: ${{ secrets.PAT_TOKEN }} # automatically generated, no need to set
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
           test_mode: false
 
       - name: Sync check
