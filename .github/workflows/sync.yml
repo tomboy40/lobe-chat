@@ -59,7 +59,14 @@ jobs:
           git commit -m "Resolved merge conflicts using theirs strategy"
 
       - name: Push changes
+        if: env.MERGE_CONFLICTS == 'false'
         run: git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Push changes after resolving conflicts
+        if: env.MERGE_CONFLICTS == 'true'
+        run: git push origin main --force
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
   
